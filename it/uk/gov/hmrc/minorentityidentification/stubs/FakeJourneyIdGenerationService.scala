@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.minorentityidentification.controllers
+package uk.gov.hmrc.minorentityidentification.stubs
 
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import uk.gov.hmrc.minorentityidentification.services.JourneyIdGenerationService
 
-@Singleton()
-class MicroserviceHelloWorldController @Inject()(cc: ControllerComponents)
-    extends BackendController(cc) {
-
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
-  }
+class FakeJourneyIdGenerationService(fakeJourneyId: String) extends JourneyIdGenerationService {
+  override def generateJourneyId(): String = fakeJourneyId
 }

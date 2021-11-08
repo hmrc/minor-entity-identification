@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.minorentityidentification.config
 
+import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AppConfig @Inject()(servicesConfig: ServicesConfig) {
+class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
 
   val authBaseUrl: String = servicesConfig.baseUrl("auth")
 

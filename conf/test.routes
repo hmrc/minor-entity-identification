@@ -1,0 +1,4 @@
+GET        /api/feature-switches                                        uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+
++ nocsrf
+POST       /api/feature-switches                                        uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()

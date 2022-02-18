@@ -101,6 +101,52 @@ Example request body:
 | ```OK(200)```                           |  ```OK```
 | ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
 
+
+#### POST /register
+
+---
+Submits a registration request to the downstream Register API.
+This API is feature switched behind the `Use stub for submissions to Registration` switch, so it can be stubbed using the Register test endpoint described below.
+
+##### Request:
+Body:
+
+```
+{
+"minorEntity": {
+            "sautr": 1234567890,
+            "regime": "VATC"
+           }
+}
+```
+
+The property "regime" is used to define the associated GRS regime. Current valid values
+are VATC and PPT.
+
+##### Response:
+
+Status: **OK(200)**
+Attempted registration and returns result of call
+
+
+Example response bodies:
+```
+{
+"registration":{
+                "registrationStatus":"REGISTERED",
+                "registeredBusinessPartnerId":"<randomm UUID>"
+               }
+}
+```
+or
+```
+{
+"registration":{
+                "registrationStatus":"REGISTRATION_FAILED",
+               }
+}
+```
+
 #### DELETE /journey/:journeyId/:dataKey
 
 ---

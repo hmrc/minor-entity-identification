@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.minorentityidentification.config
 
-import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.FeatureSwitching
+import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{FeatureSwitching, DesStub}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -30,4 +30,13 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   val graphiteHost: String = servicesConfig.getString("microservice.metrics.graphite.host")
 
   val timeToLiveSeconds: Long = servicesConfig.getInt("mongodb.timeToLiveSeconds").toLong
+
+  lazy val desStubBaseUrl: String = servicesConfig.getString("microservice.services.des.stub-url")
+
+  lazy val desBaseUrl: String = servicesConfig.getString("microservice.services.des.url")
+
+  def getRegisterWithMultipleIdentifiersUrl(regime: String): String = {
+    val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
+    s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"
+  }
 }

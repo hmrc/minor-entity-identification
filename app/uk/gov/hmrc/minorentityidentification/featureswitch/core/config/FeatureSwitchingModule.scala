@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,18 @@ import uk.gov.hmrc.minorentityidentification.featureswitch.core.models.FeatureSw
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq()
+  val switches = Seq(DesStub)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
       bind[FeatureSwitchRegistry].to(this).eagerly()
     )
   }
+}
+
+case object DesStub extends FeatureSwitch {
+  override val configName: String = "feature-switch.des-stub"
+  override val displayName: String = "Use stub for submissions to Registration"
 }
 
 

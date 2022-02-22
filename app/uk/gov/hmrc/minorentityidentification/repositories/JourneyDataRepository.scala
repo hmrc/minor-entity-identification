@@ -89,7 +89,7 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
         JourneyIdKey -> journeyId,
         AuthInternalIdKey -> authInternalId,
         CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
-      ),
+      )
     ).toFuture.map {
       _ != null
     }

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.minorentityidentification.stubs
+package uk.gov.hmrc.minorentityidentification.assets
 
-import uk.gov.hmrc.minorentityidentification.services.JourneyIdGenerationService
+import java.util.UUID
 
-class FakeJourneyIdGenerationService(fakeJourneyId: String) extends JourneyIdGenerationService {
-  override def generateJourneyId(): String = fakeJourneyId
+object TestConstants {
+
+  lazy val testJourneyId: String = UUID.randomUUID().toString
+  lazy val testInternalId: String = UUID.randomUUID().toString
+
 }

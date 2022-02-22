@@ -8,3 +8,5 @@ GET         /journey/:journeyId/:dataKey                    uk.gov.hmrc.minorent
 PUT         /journey/:journeyId/:dataKey                    uk.gov.hmrc.minorentityidentification.controllers.JourneyDataController.updateJourneyData(journeyId, dataKey)
 
 DELETE      /journey/:journeyId/:dataKey                    uk.gov.hmrc.minorentityidentification.controllers.JourneyDataController.removeJourneyDataField(journeyId, dataKey)
+
+DELETE      /journey/:journeyId                             uk.gov.hmrc.minorentityidentification.controllers.JourneyDataController.removeJourneyData(journeyId)

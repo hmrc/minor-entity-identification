@@ -37,10 +37,10 @@ A valid journeyId must be sent in the URI
 
 ##### Response
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```
-| ```NOT_FOUND(404)```                    | ```JourneyId does not exist```
+| Expected Status                         | Reason                           |
+|-----------------------------------------|----------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```           |
+| ```NOT_FOUND(404)```                    | ```JourneyId does not exist```   |
 
 Example response body:
 ```
@@ -64,11 +64,11 @@ Example Request URI
 
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```
-| ```NOT_FOUND(404)```                    | ```No data exists for JourneyId or dataKey```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                        |
+|-----------------------------------------|-----------------------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```                        |
+| ```NOT_FOUND(404)```                    | ```No data exists for JourneyId or dataKey``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```          |
 
 
 Response body for example URI:
@@ -96,10 +96,10 @@ Example request body:
 ```
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```OK```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                 |
+|-----------------------------------------|----------------------------------------|
+| ```OK(200)```                           | ```OK```                               |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```   |
 
 
 #### POST /register
@@ -158,15 +158,36 @@ Requires a valid journeyId and dataKey
 Example request URI:
 `testJourneyId = <random UUID>`
 ```
-/journey/testJourneyId/tbc
+/journey/testJourneyId/utr
 ```
 
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```NO_CONTENT(204)```                   |  ```Field successfully deleted from database```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                         |
+|-----------------------------------------|------------------------------------------------|
+| ```NO_CONTENT(204)```                   | ```Field successfully deleted from database``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```           |
+
+#### DELETE /journey/:journeyId
+
+---
+Removes the data that is stored against the journeyId
+
+##### Request:
+Requires a valid journeyId and dataKey
+
+Example request URI:
+`testJourneyId = <random UUID>`
+```
+/journey/testJourneyId
+```
+
+##### Response:
+
+| Expected Status                         | Reason                                        |
+|-----------------------------------------|-----------------------------------------------|
+| ```NO_CONTENT(204)```                   | ```Data successfully deleted from database``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```          |
 
 
 ### License

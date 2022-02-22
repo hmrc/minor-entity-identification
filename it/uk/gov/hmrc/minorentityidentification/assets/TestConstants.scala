@@ -22,5 +22,7 @@ object TestConstants {
 
   lazy val testJourneyId: String = UUID.randomUUID().toString
   lazy val testInternalId: String = UUID.randomUUID().toString
-
+  val testSafeId: String = UUID.randomUUID().toString
+  val testSautr: String = "1234567890"
+  val testRegime: String = "VATC"
 }

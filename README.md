@@ -189,6 +189,27 @@ Example request URI:
 | ```NO_CONTENT(204)```                   | ```Data successfully deleted from database``` |
 | ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```          |
 
+#### POST /test-only/cross-regime/register/GRS
+
+---
+Stub for downstream Register API
+
+##### Request:
+No body is required for this request as this always returns a successful response regardless of the data sent.
+
+##### Response:
+Status: **OK(200)**
+
+Example Response body:
+
+```
+{
+"identification":{
+                  "idType":"SAFEID",
+                  "idValue":"X00000123456789"
+                 }
+}
+```
 
 ### License
 

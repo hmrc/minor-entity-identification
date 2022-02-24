@@ -35,6 +35,12 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   lazy val desBaseUrl: String = servicesConfig.getString("microservice.services.des.url")
 
+  lazy val desAuthorisationToken: String =
+    s"Bearer ${servicesConfig.getString("microservice.services.des.authorisation-token")}"
+
+  lazy val desEnvironment: String =
+    servicesConfig.getString("microservice.services.des.environment")
+
   def getRegisterWithMultipleIdentifiersUrl(regime: String): String = {
     val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
     s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"

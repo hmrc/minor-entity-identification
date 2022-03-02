@@ -33,18 +33,14 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     )
   }
 
+  case object DesStub extends FeatureSwitch {
+    override val configName: String = "feature-switch.des-stub"
+    override val displayName: String = "Use stub for submissions to Registration"
+  }
+
   case object StubGetCtReference extends FeatureSwitch {
     override val configName: String = "feature-switch.ct-reference-stub"
     override val displayName: String = "Use stub for Get CT Reference"
   }
 
 }
-
-case object DesStub extends FeatureSwitch {
-  override val configName: String = "feature-switch.des-stub"
-  override val displayName: String = "Use stub for submissions to Registration"
-}
-
-
-
-

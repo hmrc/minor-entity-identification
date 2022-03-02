@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.minorentityidentification.config
 
-import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
+import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching, StubGetCtReference}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -45,4 +45,10 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
     val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
     s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"
   }
+
+  def getCtReferenceUrl(companyNumber: String): String = {
+    val baseUrl = if (isEnabled(StubGetCtReference)) desStubBaseUrl else desBaseUrl
+    s"$baseUrl/corporation-tax/identifiers/crn/$companyNumber"
+  }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.minorentityidentification.featureswitch.core.config
 
-import javax.inject.Singleton
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.minorentityidentification.featureswitch.core.models.FeatureSwitch
 
+import javax.inject.Singleton
+
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(StubGetCtReference)
+  val switches = Seq(DesStub, StubGetCtReference)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -37,6 +38,11 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     override val displayName: String = "Use stub for Get CT Reference"
   }
 
+}
+
+case object DesStub extends FeatureSwitch {
+  override val configName: String = "feature-switch.des-stub"
+  override val displayName: String = "Use stub for submissions to Registration"
 }
 
 

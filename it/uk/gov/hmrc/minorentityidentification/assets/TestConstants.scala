@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.minorentityidentification.featureswitch.core.config
+package uk.gov.hmrc.minorentityidentification.assets
 
-import uk.gov.hmrc.minorentityidentification.featureswitch.core.models.FeatureSwitch
+import java.util.UUID
 
-trait FeatureSwitchRegistry {
+object TestConstants {
 
-  def switches: Seq[FeatureSwitch]
-
-  def apply(name: String): FeatureSwitch =
-    get(name) match {
-      case Some(switch) => switch
-      case None => throw new IllegalArgumentException("Invalid feature switch: " + name)
-    }
-
-  def get(name: String): Option[FeatureSwitch] = switches find (_.configName == name)
-
+  lazy val testJourneyId: String = UUID.randomUUID().toString
+  lazy val testInternalId: String = UUID.randomUUID().toString
+  val testSafeId: String = UUID.randomUUID().toString
+  val testSautr: String = "1234567890"
+  val testRegime: String = "VATC"
 }

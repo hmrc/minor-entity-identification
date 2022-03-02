@@ -16,11 +16,16 @@
 
 package uk.gov.hmrc.minorentityidentification.services
 
-import java.util.UUID
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersConnector
+import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersResult
+
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
-class JourneyIdGenerationService @Inject()() {
-  def generateJourneyId(): String = UUID.randomUUID().toString
-}
+class RegisterWithMultipleIdentifiersService @Inject()(registerWithMultipleIdentifiersConnector: RegisterWithMultipleIdentifiersConnector) {
 
+  def registerWithSautr(sautr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
+    registerWithMultipleIdentifiersConnector.registerWithSautr(sautr, regime)
+}

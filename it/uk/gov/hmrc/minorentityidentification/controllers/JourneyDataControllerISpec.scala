@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
+import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testInternalId, testJourneyId}
 import uk.gov.hmrc.minorentityidentification.services.JourneyIdGenerationService
 import uk.gov.hmrc.minorentityidentification.stubs.{AuthStub, FakeJourneyIdGenerationService}
 import uk.gov.hmrc.minorentityidentification.utils._
@@ -29,8 +30,6 @@ import java.util.UUID
 
 class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers with JourneyDataMongoHelper with AuthStub {
 
-  lazy val testJourneyId: String = UUID.randomUUID().toString
-  lazy val testInternalId: String = UUID.randomUUID().toString
   lazy val testIncorrectAuthInternalId: String = UUID.randomUUID().toString
 
   override lazy val app: Application = new GuiceApplicationBuilder()
@@ -118,7 +117,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
       }
     }
   }
-
 
   "GET /journey/:journeyId/:dataKey" when {
     "there is data stored against the journey ID containing the value in dataKey" should {
@@ -313,5 +311,28 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     }
   }
 
-}
+  "DELETE /journey/:journeyId" should {
+    "remove all journey data except JourneyId, AuthInternalId and CreationTimestamp" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      val testDataKey = "testDataKey"
+      val testDataValue = "testDataValue"
+      val secondTestDataKey = "secondDataKey"
+      val secondTestDataValue = "secondDataValue"
+      val creationTimestampKey: String = "creationTimestamp"
 
+      insertById(testJourneyId, testInternalId, Json.obj(testDataKey -> testDataValue, secondTestDataKey -> secondTestDataValue))
+
+      val res = delete(s"/journey/$testJourneyId")
+
+      res.status mustBe NO_CONTENT
+
+      findById(testJourneyId).map(_.-(creationTimestampKey)) mustBe Some(
+        Json.obj(
+          "_id" -> testJourneyId,
+          "authInternalId" -> testInternalId
+        )
+      )
+    }
+  }
+
+}

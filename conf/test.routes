@@ -2,3 +2,5 @@ GET        /api/feature-switches                                        uk.gov.h
 
 + nocsrf
 POST       /api/feature-switches                                        uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+
+POST       /cross-regime/register/GRS                                   uk.gov.hmrc.minorentityidentification.testOnly.RegisterWithMultipleIdentifiersStubController.registerWithMultipleIdentifiers

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,6 +99,18 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
       authorised().retrieve(internalId) {
         case Some(internalId) =>
           journeyDataService.removeJourneyDataField(journeyId, internalId, dataKey).map {
+            _ => NoContent
+          }
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
+      }
+  }
+
+  def removeJourneyData(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised().retrieve(internalId) {
+        case Some(internalId) =>
+          journeyDataService.removeJourneyData(journeyId, internalId).map {
             _ => NoContent
           }
         case None =>

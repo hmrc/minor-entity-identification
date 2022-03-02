@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,14 +49,12 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
       )
     ).toFuture.map(_ => journeyId)
 
-
   def getJourneyData(journeyId: String, authInternalId: String): Future[Option[JsObject]] =
     collection.find(
       Filters.and(
         Filters.equal(JourneyIdKey, journeyId),
         Filters.equal(AuthInternalIdKey, authInternalId))
     ).headOption
-
 
   def updateJourneyData(journeyId: String, authInternalId: String, dataKey: String, data: JsValue): Future[Boolean] =
     collection.updateOne(
@@ -66,7 +64,7 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
       ),
       Updates.set(dataKey, Codecs.toBson(data)),
       UpdateOptions().upsert(false)
-    ).toFuture.map{
+    ).toFuture.map {
       _.getMatchedCount == 1
     }
 
@@ -77,8 +75,23 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
         Filters.equal(AuthInternalIdKey, authInternalId)
       ),
       Updates.unset(dataKey)
-    ).toFuture.map{
+    ).toFuture.map {
       _.getMatchedCount == 1
+    }
+
+  def removeJourneyData(journeyId: String, authInternalId: String): Future[Boolean] =
+    collection.findOneAndReplace(
+      Filters.and(
+        Filters.equal(JourneyIdKey, journeyId),
+        Filters.equal(AuthInternalIdKey, authInternalId)
+      ),
+      Json.obj(
+        JourneyIdKey -> journeyId,
+        AuthInternalIdKey -> authInternalId,
+        CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
+      )
+    ).toFuture.map {
+      _ != null
     }
 
   def drop: Future[Unit] = collection.drop().toFuture.map(_ => Unit)

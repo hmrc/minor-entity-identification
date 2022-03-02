@@ -37,10 +37,10 @@ A valid journeyId must be sent in the URI
 
 ##### Response
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```
-| ```NOT_FOUND(404)```                    | ```JourneyId does not exist```
+| Expected Status                         | Reason                           |
+|-----------------------------------------|----------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```           |
+| ```NOT_FOUND(404)```                    | ```JourneyId does not exist```   |
 
 Example response body:
 ```
@@ -64,11 +64,11 @@ Example Request URI
 
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```
-| ```NOT_FOUND(404)```                    | ```No data exists for JourneyId or dataKey```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                        |
+|-----------------------------------------|-----------------------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```                        |
+| ```NOT_FOUND(404)```                    | ```No data exists for JourneyId or dataKey``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```          |
 
 
 Response body for example URI:
@@ -96,10 +96,56 @@ Example request body:
 ```
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```OK```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                 |
+|-----------------------------------------|----------------------------------------|
+| ```OK(200)```                           | ```OK```                               |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```   |
+
+
+#### POST /register
+
+---
+Submits a registration request to the downstream Register API.
+This API is feature switched behind the `Use stub for submissions to Registration` switch, so it can be stubbed using the Register test endpoint described below.
+
+##### Request:
+Body:
+
+```
+{
+"minorEntity": {
+            "sautr": 1234567890,
+            "regime": "VATC"
+           }
+}
+```
+
+The property "regime" is used to define the associated GRS regime. Current valid values
+are VATC and PPT.
+
+##### Response:
+
+Status: **OK(200)**
+Attempted registration and returns result of call
+
+
+Example response bodies:
+```
+{
+"registration":{
+                "registrationStatus":"REGISTERED",
+                "registeredBusinessPartnerId":"<randomm UUID>"
+               }
+}
+```
+or
+```
+{
+"registration":{
+                "registrationStatus":"REGISTRATION_FAILED",
+               }
+}
+```
 
 #### DELETE /journey/:journeyId/:dataKey
 
@@ -112,16 +158,58 @@ Requires a valid journeyId and dataKey
 Example request URI:
 `testJourneyId = <random UUID>`
 ```
-/journey/testJourneyId/tbc
+/journey/testJourneyId/utr
 ```
 
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```NO_CONTENT(204)```                   |  ```Field successfully deleted from database```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                         |
+|-----------------------------------------|------------------------------------------------|
+| ```NO_CONTENT(204)```                   | ```Field successfully deleted from database``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```           |
 
+#### DELETE /journey/:journeyId
+
+---
+Removes the data that is stored against the journeyId
+
+##### Request:
+Requires a valid journeyId and dataKey
+
+Example request URI:
+`testJourneyId = <random UUID>`
+```
+/journey/testJourneyId
+```
+
+##### Response:
+
+| Expected Status                         | Reason                                        |
+|-----------------------------------------|-----------------------------------------------|
+| ```NO_CONTENT(204)```                   | ```Data successfully deleted from database``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```          |
+
+#### POST /test-only/cross-regime/register/GRS
+
+---
+Stub for downstream Register API
+
+##### Request:
+No body is required for this request as this always returns a successful response regardless of the data sent.
+
+##### Response:
+Status: **OK(200)**
+
+Example Response body:
+
+```
+{
+"identification":{
+                  "idType":"SAFEID",
+                  "idValue":"X00000123456789"
+                 }
+}
+```
 
 ### License
 

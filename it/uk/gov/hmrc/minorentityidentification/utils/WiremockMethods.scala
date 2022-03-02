@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package uk.gov.hmrc.minorentityidentification.utils
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPattern
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.Writes
 
 trait WiremockMethods {
@@ -49,21 +50,21 @@ trait WiremockMethods {
       }
     }
 
-    def thenReturn[T](status: Int, body: T)(implicit writes: Writes[T]): Unit = {
+    def thenReturn[T](status: Int, body: T)(implicit writes: Writes[T]): StubMapping = {
       val stringBody = writes.writes(body).toString()
       thenReturnInternal(status, Map.empty, Some(stringBody))
     }
 
-    def thenReturn[T](status: Int, headers: Map[String, String], body: T)(implicit writes: Writes[T]): Unit = {
+    def thenReturn[T](status: Int, headers: Map[String, String], body: T)(implicit writes: Writes[T]): StubMapping = {
       val stringBody = writes.writes(body).toString()
       thenReturnInternal(status, headers, Some(stringBody))
     }
 
-    def thenReturn(status: Int, headers: Map[String, String] = Map.empty): Unit = {
+    def thenReturn(status: Int, headers: Map[String, String] = Map.empty): StubMapping = {
       thenReturnInternal(status, headers, None)
     }
 
-    private def thenReturnInternal(status: Int, headers: Map[String, String], body: Option[String]): Unit = {
+    private def thenReturnInternal(status: Int, headers: Map[String, String], body: Option[String]): StubMapping = {
       val response = {
         val statusResponse = aResponse().withStatus(status)
         val responseWithHeaders = headers.foldLeft(statusResponse) {
@@ -93,6 +94,10 @@ trait WiremockMethods {
 
   case object PUT extends HTTPMethod {
     override val wireMockMapping: UrlPattern => MappingBuilder = put
+  }
+
+  case object DELETE extends HTTPMethod {
+    override val wireMockMapping: UrlPattern => MappingBuilder = delete
   }
 
 }

@@ -21,10 +21,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testRegime, testSafeId, testSautr}
 import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersSuccess
 import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
-import uk.gov.hmrc.minorentityidentification.stubs.{AuthStub, RegisterWithMultipleIdentifiersStub}
+import uk.gov.hmrc.minorentityidentification.stubs.RegisterWithMultipleIdentifiersStub
 import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
 
-class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper with AuthStub with RegisterWithMultipleIdentifiersStub with FeatureSwitching {
+class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper with RegisterWithMultipleIdentifiersStub with FeatureSwitching {
 
   lazy val connector: RegisterWithMultipleIdentifiersConnector = app.injector.instanceOf[RegisterWithMultipleIdentifiersConnector]
 

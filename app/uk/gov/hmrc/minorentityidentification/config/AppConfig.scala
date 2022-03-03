@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.minorentityidentification.config
 
-import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
+import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching, StubGetCtReference}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -38,7 +38,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val desAuthorisationToken: String =
     s"Bearer ${servicesConfig.getString("microservice.services.des.authorisation-token")}"
 
-  lazy val desEnvironment: String =
+  lazy val desEnvironmentHeader: String =
     servicesConfig.getString("microservice.services.des.environment")
 
   def getRegisterWithMultipleIdentifiersUrl(regime: String): String = {
@@ -46,4 +46,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
     s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"
   }
 
+  def getCtReferenceUrl(ctutr: String): String = {
+    val baseUrl = if (isEnabled(StubGetCtReference)) desStubBaseUrl else desBaseUrl
+    s"$baseUrl/corporation-tax/identifiers/utr/$ctutr"
+  }
 }

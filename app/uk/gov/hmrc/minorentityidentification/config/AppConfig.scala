@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.minorentityidentification.config
 
-import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching, StubGetCtReference}
+import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}

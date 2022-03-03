@@ -46,9 +46,4 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
     s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"
   }
 
-  def getCtReferenceUrl(companyNumber: String): String = {
-    val baseUrl = if (isEnabled(StubGetCtReference)) desStubBaseUrl else desBaseUrl
-    s"$baseUrl/corporation-tax/identifiers/crn/$companyNumber"
-  }
-
 }

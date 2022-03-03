@@ -33,7 +33,7 @@ class GetCtReferenceConnector @Inject()(http: HttpClient,
   def getCtReference(ctutr: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val extraHeaders = Seq(
       "Authorization" -> appConfig.desAuthorisationToken,
-      "Environment" -> appConfig.desEnvironmentHeader,
+      "Environment" -> appConfig.desEnvironmentHeader
     )
 
     http.GET[Option[String]](appConfig.getCtReferenceUrl(ctutr), headers = extraHeaders)(GetCtReferenceHttpReads, hc, ec)

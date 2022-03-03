@@ -1,6 +1,8 @@
-GET        /api/feature-switches                                        uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+GET         /api/feature-switches                          uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+
+GET         /corporation-tax/identifiers/utr/:ctUtr        uk.gov.hmrc.minorentityidentification.testOnly.GetCtReferenceStubController.getCtReference(ctUtr: String)
 
 + nocsrf
-POST       /api/feature-switches                                        uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+POST        /api/feature-switches                          uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
-POST       /cross-regime/register/GRS                                   uk.gov.hmrc.minorentityidentification.testOnly.RegisterWithMultipleIdentifiersStubController.registerWithMultipleIdentifiers
+POST        /cross-regime/register/GRS                     uk.gov.hmrc.minorentityidentification.testOnly.RegisterWithMultipleIdentifiersStubController.registerWithMultipleIdentifiers

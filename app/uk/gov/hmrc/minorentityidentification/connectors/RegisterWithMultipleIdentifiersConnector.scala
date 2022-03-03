@@ -30,7 +30,7 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
                                                         )(implicit ec: ExecutionContext) {
   lazy val extraHeaders = Seq(
     "Authorization" -> appConfig.desAuthorisationToken,
-    "Environment" -> appConfig.desEnvironment,
+    "Environment" -> appConfig.desEnvironmentHeader,
     "Content-Type" -> "application/json"
   )
 

@@ -12,3 +12,5 @@ DELETE      /journey/:journeyId/:dataKey                    uk.gov.hmrc.minorent
 DELETE      /journey/:journeyId                             uk.gov.hmrc.minorentityidentification.controllers.JourneyDataController.removeJourneyData(journeyId)
 
 POST        /register                                       uk.gov.hmrc.minorentityidentification.controllers.RegisterBusinessEntityController.registerWithSautr()
+
+POST        /validate-details                               uk.gov.hmrc.minorentityidentification.controllers.ValidateCtDetailsController.validateDetails()

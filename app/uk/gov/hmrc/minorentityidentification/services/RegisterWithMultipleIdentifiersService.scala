@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.minorentityidentification.services
 
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersConnector
 import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersResult
@@ -26,6 +27,21 @@ import scala.concurrent.Future
 @Singleton
 class RegisterWithMultipleIdentifiersService @Inject()(registerWithMultipleIdentifiersConnector: RegisterWithMultipleIdentifiersConnector) {
 
-  def registerWithSautr(sautr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
-    registerWithMultipleIdentifiersConnector.registerWithSautr(sautr, regime)
+  def registerTrust(sautr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+    val jsonBody: JsObject = Json.obj(
+      "trust" -> Json.obj(
+        "sautr" -> sautr
+      )
+    )
+    registerWithMultipleIdentifiersConnector.register(jsonBody, regime)
+  }
+
+  def registerUA(ctutr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+    val jsonBody: JsObject = Json.obj(
+      "unincorporatedAssociation" -> Json.obj(
+        "ctutr" -> ctutr
+      )
+    )
+    registerWithMultipleIdentifiersConnector.register(jsonBody, regime)
+  }
 }

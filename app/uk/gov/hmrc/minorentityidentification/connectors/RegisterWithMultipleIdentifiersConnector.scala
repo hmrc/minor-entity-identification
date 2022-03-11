@@ -36,22 +36,12 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
 
   implicit val httpReads: HttpReads[RegisterWithMultipleIdentifiersResult] = RegisterWithMultipleIdentifiersHttpReads
 
-  def registerWithSautr(sautr: String, regime: String
-                      )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
-    val trustIdentifiers = sautr match {
-      case sautr => Json.obj("sautr" -> sautr)
-    }
-
-    val jsonBody: JsObject = Json.obj(
-      "trust" -> trustIdentifiers
-    )
-
+  def register(jsonBody: JsObject, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
     http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
       url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime),
       headers = extraHeaders,
       body = jsonBody
     )
-
   }
 }
 

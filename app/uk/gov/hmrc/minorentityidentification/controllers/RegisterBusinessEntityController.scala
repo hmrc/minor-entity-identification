@@ -32,14 +32,31 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
                                                  val authConnector: AuthConnector
                                                 )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def registerWithSautr(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
-    sautr <- (json \ "trust" \ "sautr").validate[String]
-    regime <- (json \ "trust" \ "regime").validate[String]
+  def registerTrust(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
+    sautr <- (json \ "sautr").validate[String]
+    regime <- (json \ "regime").validate[String]
   } yield (sautr, regime))) {
     implicit request =>
       authorised() {
         val (sautr, regime) = request.body
-        registerWithMultipleIdentifiersService.registerWithSautr(sautr, regime).map {
+        registerWithMultipleIdentifiersService.registerTrust(sautr, regime).map {
+          case RegisterWithMultipleIdentifiersSuccess(safeId) =>
+            Ok(Json.obj(
+              "registration" -> Json.obj(
+                "registrationStatus" -> "REGISTERED",
+                "registeredBusinessPartnerId" -> safeId)))
+        }
+      }
+  }
+
+  def registerUA(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
+    ctutr <- (json \ "ctutr").validate[String]
+    regime <- (json \ "regime").validate[String]
+  } yield (ctutr, regime))) {
+    implicit request =>
+      authorised() {
+        val (ctutr, regime) = request.body
+        registerWithMultipleIdentifiersService.registerUA(ctutr, regime).map {
           case RegisterWithMultipleIdentifiersSuccess(safeId) =>
             Ok(Json.obj(
               "registration" -> Json.obj(

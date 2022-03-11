@@ -31,4 +31,7 @@ object TestConstants {
   val testPostcode: String = "NE98 1ZZ"
 
   val testCompanyDetailsJson: JsObject = Json.obj("companyName" -> "ACME", "companyAddress" -> "Address 1", "companyPostCode" -> "NE98 1ZZ")
+
+  val testRegistrationTrustJsonBody: JsObject = Json.obj("sautr" -> testSautr, "regime" -> testRegime)
+  val testRegistrationUAJsonBody: JsObject = Json.obj("ctutr" -> testCtutr, "regime" -> testRegime)
 }

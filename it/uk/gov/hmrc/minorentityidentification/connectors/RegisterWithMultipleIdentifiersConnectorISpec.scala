@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.minorentityidentification.connectors
 
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testRegime, testSafeId, testSautr}
+import uk.gov.hmrc.minorentityidentification.assets.TestConstants._
 import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersSuccess
 import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
 import uk.gov.hmrc.minorentityidentification.stubs.RegisterWithMultipleIdentifiersStub
@@ -30,14 +31,33 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  "registerWithMultipleIdentifiers" when {
+  val jsonBodyTrust: JsObject = Json.obj(
+    "trust" -> Json.obj(
+      "sautr" -> testSautr
+    )
+  )
+
+  val jsonBodyUA: JsObject = Json.obj(
+    "unincorporatedAssociation" -> Json.obj(
+      "ctutr" -> testCtutr
+    )
+  )
+
+  "register" when {
     s"the $DesStub feature switch is disabled" should {
       "return OK with status Registered and the SafeId" when {
-        "the Registration was a success on the Register API stub with a SAUTR" in {
+        "the Registration was a success with a SAUTR" in {
           disable(DesStub)
 
-          stubRegisterWithSautrSuccess(testSautr, testRegime)(OK, testSafeId)
-          val result = connector.registerWithSautr(testSautr, testRegime)
+          stubRegisterTrustSuccess(testSautr, testRegime)(OK, testSafeId)
+          val result = connector.register(jsonBodyTrust, testRegime)
+          await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
+        }
+        "the Registration was a success with a CTUTR" in {
+          disable(DesStub)
+
+          stubRegisterUASuccess(testCtutr, testRegime)(OK, testSafeId)
+          val result = connector.register(jsonBodyUA, testRegime)
           await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
         }
       }
@@ -46,18 +66,25 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the call returns 500" in {
           disable(DesStub)
 
-          stubRegisterWithSautrSuccess(testSautr, testRegime)(INTERNAL_SERVER_ERROR, testSafeId)
-          intercept[InternalServerException](await(connector.registerWithSautr(testSautr, testRegime)))
+          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR)
+          intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
         }
       }
     }
     s"the $DesStub feature switch is enabled" when {
       "return OK with status Registered and the SafeId" when {
-        "the Registration was a success on the Register API stub with a SAUTR" in {
+        "the Registration was a success with a SAUTR" in {
           enable(DesStub)
 
-          stubRegisterWithSautrSuccess(testSautr, testRegime)(OK, testSafeId)
-          val result = connector.registerWithSautr(testSautr, testRegime)
+          stubRegisterTrustSuccess(testSautr, testRegime)(OK, testSafeId)
+          val result = connector.register(jsonBodyTrust, testRegime)
+          await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
+        }
+        "the Registration was a success with a CTUTR" in {
+          enable(DesStub)
+
+          stubRegisterUASuccess(testCtutr, testRegime)(OK, testSafeId)
+          val result = connector.register(jsonBodyUA, testRegime)
           await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
         }
       }
@@ -66,11 +93,10 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the call returns 500" in {
           enable(DesStub)
 
-          stubRegisterWithSautrSuccess(testSautr, testRegime)(INTERNAL_SERVER_ERROR, testSafeId)
-          intercept[InternalServerException](await(connector.registerWithSautr(testSautr, testRegime)))
+          stubRegisterTrustSuccess(testSautr, testRegime)(INTERNAL_SERVER_ERROR, testSafeId)
+          intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
         }
       }
     }
   }
-
 }

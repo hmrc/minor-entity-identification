@@ -18,7 +18,7 @@ package uk.gov.hmrc.minorentityidentification.controllers
 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testInternalId, testRegime, testSafeId, testSautr}
+import uk.gov.hmrc.minorentityidentification.assets.TestConstants._
 import uk.gov.hmrc.minorentityidentification.stubs.{AuthStub, RegisterWithMultipleIdentifiersStub}
 import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
 
@@ -27,25 +27,18 @@ import javax.inject.Singleton
 @Singleton
 class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with AuthStub with RegisterWithMultipleIdentifiersStub {
 
-  "POST /register" should {
+  "POST /register-trust" should {
     "return OK with status Registered and the SafeId" when {
       "the Registration was a success with a SAUTR" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithSautrSuccess(testSautr, testRegime)(OK, testSafeId)
-
-        val jsonBody = Json.obj(
-          "trust" -> Json.obj(
-            "sautr" -> testSautr,
-            "regime" -> testRegime
-          )
-        )
+        stubRegisterTrustSuccess(testSautr, testRegime)(OK, testSafeId)
 
         val resultJson = Json.obj(
           "registration" -> Json.obj(
             "registrationStatus" -> "REGISTERED",
             "registeredBusinessPartnerId" -> testSafeId))
 
-        val result = post("/register")(jsonBody)
+        val result = post("/register-trust")(testRegistrationTrustJsonBody)
         result.status mustBe OK
         result.json mustBe resultJson
       }
@@ -53,18 +46,37 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return INTERNAL_SERVER_ERROR" when {
       "the Registration was not successful" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithSautrFailure(testSautr, testRegime)(BAD_REQUEST)
+        stubRegisterTrustFailure(testSautr, testRegime)(BAD_REQUEST)
 
-        val jsonBody = Json.obj(
-          "trust" -> Json.obj(
-            "sautr" -> testSautr,
-            "regime" -> testRegime
-          )
-        )
-
-        val result = post("/register")(jsonBody)
+        val result = post("/register-trust")(testRegistrationTrustJsonBody)
         result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
 
+  "POST /register-ua" should {
+    "return OK with status Registered and the SafeId" when {
+      "the Registration was a success with a CTUTR" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterUASuccess(testCtutr, testRegime)(OK, testSafeId)
+
+        val resultJson = Json.obj(
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId))
+
+        val result = post("/register-ua")(testRegistrationUAJsonBody)
+        result.status mustBe OK
+        result.json mustBe resultJson
+      }
+    }
+    "return INTERNAL_SERVER_ERROR" when {
+      "the Registration was not successful" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterUAFailure(testSautr, testRegime)(BAD_REQUEST)
+
+        val result = post("/register-ua")(testRegistrationUAJsonBody)
+        result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

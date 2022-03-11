@@ -38,7 +38,7 @@ trait RegisterWithMultipleIdentifiersStub extends WiremockMethods {
       "reason" -> "Request has not passed validation. Invalid Payload."
     )
 
-  def stubRegisterWithSautrSuccess(sautr: String, regime: String)(status: Int, safeId: String): StubMapping = {
+  def stubRegisterTrustSuccess(sautr: String, regime: String)(status: Int, safeId: String): StubMapping = {
     val postBody = Json.obj("trust" ->
       Json.obj(
         "sautr" -> sautr
@@ -51,10 +51,35 @@ trait RegisterWithMultipleIdentifiersStub extends WiremockMethods {
       )
   }
 
-  def stubRegisterWithSautrFailure(sautr: String, regime: String)(status: Int): StubMapping = {
+  def stubRegisterUASuccess(ctutr: String, regime: String)(status: Int, safeId: String): StubMapping = {
+    val postBody = Json.obj("unincorporatedAssociation" ->
+      Json.obj(
+        "ctutr" -> ctutr
+      )
+    )
+    when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
+      .thenReturn(
+        status = status,
+        body = registerResponseSuccessBody(safeId)
+      )
+  }
+
+  def stubRegisterTrustFailure(sautr: String, regime: String)(status: Int): StubMapping = {
     val postBody = Json.obj("trust" ->
       Json.obj(
         "sautr" -> sautr
+      ))
+    when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
+      .thenReturn(
+        status = status,
+        body = registerResponseFailureBody()
+      )
+  }
+
+  def stubRegisterUAFailure(ctutr: String, regime: String)(status: Int): StubMapping = {
+    val postBody = Json.obj("trust" ->
+      Json.obj(
+        "ctutr" -> ctutr
       ))
     when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(

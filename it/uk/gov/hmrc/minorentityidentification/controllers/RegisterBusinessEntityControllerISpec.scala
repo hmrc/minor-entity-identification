@@ -43,10 +43,28 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
         result.json mustBe resultJson
       }
     }
-    "return INTERNAL_SERVER_ERROR" when {
-      "the Registration was not successful" in {
+    "return an error response" when {
+      "the Registration was not successful owing to a single error" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterTrustFailure(testSautr, testRegime)(BAD_REQUEST)
+        stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR, registrationInternalServerErrorAsJson)
+
+        val result = post("/register-trust")(testRegistrationTrustJsonBody)
+        result.status mustBe OK
+        result.json mustBe registrationControllerSingleFailureResultAsJson
+      }
+      "the Registration was not successful owing to multiple errors" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterTrustFailure(testSautr, testRegime)(BAD_REQUEST, registrationMultipleFailureResultAsJson)
+
+        val result = post("/register-trust")(testRegistrationTrustJsonBody)
+        result.status mustBe OK
+        result.json mustBe registrationControllerMultipleFailureResultAsJson
+      }
+    }
+    "return an internal server error " when {
+      "the Registration was not successful owing to invalid Json in the response" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterTrustFailure(testSautr, testRegime)(BAD_REQUEST, invalidMultipleErrorsAsJson)
 
         val result = post("/register-trust")(testRegistrationTrustJsonBody)
         result.status mustBe INTERNAL_SERVER_ERROR
@@ -70,10 +88,28 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
         result.json mustBe resultJson
       }
     }
-    "return INTERNAL_SERVER_ERROR" when {
-      "the Registration was not successful" in {
+    "return an error response" when {
+      "the Registration is not successful owing to a single error" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterUAFailure(testSautr, testRegime)(BAD_REQUEST)
+        stubRegisterUAFailure(testCtutr, testRegime)(INTERNAL_SERVER_ERROR, registrationInternalServerErrorAsJson)
+
+        val result = post("/register-ua")(testRegistrationUAJsonBody)
+        result.status mustBe OK
+        result.json mustBe registrationControllerSingleFailureResultAsJson
+      }
+      "the Registration was not successful owing to multiple errors" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterUAFailure(testCtutr, testRegime)(BAD_REQUEST, registrationMultipleFailureResultAsJson)
+
+        val result = post("/register-ua")(testRegistrationUAJsonBody)
+        result.status mustBe OK
+        result.json mustBe registrationControllerMultipleFailureResultAsJson
+      }
+    }
+    "return an internal server error " when {
+      "the Registration was not successful owing to invalid Json in the response" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterUAFailure(testCtutr, testRegime)(BAD_REQUEST, invalidMultipleErrorsAsJson)
 
         val result = post("/register-ua")(testRegistrationUAJsonBody)
         result.status mustBe INTERNAL_SERVER_ERROR

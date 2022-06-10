@@ -17,9 +17,9 @@
 package uk.gov.hmrc.minorentityidentification.controllers
 
 import play.api.libs.json.Json
-import play.api.mvc.{Action, ControllerComponents}
+import play.api.mvc.{Action, ControllerComponents, Result}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersSuccess
+import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
 import uk.gov.hmrc.minorentityidentification.services.RegisterWithMultipleIdentifiersService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -39,13 +39,7 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
     implicit request =>
       authorised() {
         val (sautr, regime) = request.body
-        registerWithMultipleIdentifiersService.registerTrust(sautr, regime).map {
-          case RegisterWithMultipleIdentifiersSuccess(safeId) =>
-            Ok(Json.obj(
-              "registration" -> Json.obj(
-                "registrationStatus" -> "REGISTERED",
-                "registeredBusinessPartnerId" -> safeId)))
-        }
+        registerWithMultipleIdentifiersService.registerTrust(sautr, regime).map(handleRegisterResponse)
       }
   }
 
@@ -56,13 +50,22 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
     implicit request =>
       authorised() {
         val (ctutr, regime) = request.body
-        registerWithMultipleIdentifiersService.registerUA(ctutr, regime).map {
-          case RegisterWithMultipleIdentifiersSuccess(safeId) =>
-            Ok(Json.obj(
-              "registration" -> Json.obj(
-                "registrationStatus" -> "REGISTERED",
-                "registeredBusinessPartnerId" -> safeId)))
-        }
+        registerWithMultipleIdentifiersService.registerUA(ctutr, regime).map(handleRegisterResponse)
       }
   }
+
+  private def handleRegisterResponse(registerResult: RegisterWithMultipleIdentifiersResult): Result = registerResult match {
+    case RegisterWithMultipleIdentifiersSuccess(safeId) =>
+      Ok(Json.obj(
+        "registration" -> Json.obj(
+          "registrationStatus" -> "REGISTERED",
+          "registeredBusinessPartnerId" -> safeId)))
+    case RegisterWithMultipleIdentifiersFailure(_, body) =>
+      Ok(Json.obj(
+        "registration" -> Json.obj(
+          "registrationStatus" -> "REGISTRATION_FAILED",
+          "failures" -> body))
+      )
+  }
+
 }

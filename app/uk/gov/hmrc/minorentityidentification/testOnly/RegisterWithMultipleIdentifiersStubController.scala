@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.minorentityidentification.testOnly
 
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{Action, ControllerComponents, Result}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -25,16 +26,70 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class RegisterWithMultipleIdentifiersStubController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
 
-  val registerWithMultipleIdentifiers: Action[AnyContent] = Action {
-    val stubbedSafeId = "X00000123456789"
+  private val stubbedSafeId: String = "X00000123456789"
 
-    Ok(Json.obj(
-      "identification" -> Json.arr(
-        Json.obj(
-          "idType" -> "SAFEID",
-          "idValue" -> stubbedSafeId
-        )
-      )
-    ))
+  private val successfulResponseAsJson: JsObject = {
+    val responseAsString: String =
+      s"""
+       |{
+       |  "identification" : [
+       |    {
+       |      "idType" : "SAFEID",
+       |      "idValue" : "$stubbedSafeId"
+       |    }
+       |  ]
+       |}""".stripMargin
+
+    Json.parse(responseAsString).as[JsObject]
   }
+
+  val singleFailureResultAsString: String =
+    """{
+       |  "code" : "INVALID_PAYLOAD",
+       |  "reason" : "Request has not passed validation. Invalid Payload."
+       |}""".stripMargin
+
+  val multipleFailureResultAsString: String =
+    """
+       |{
+       |    "failures" : [
+       |      {
+       |        "code" : "INVALID_PAYLOAD",
+       |        "reason" : "Request has not passed validation. Invalid Payload."
+       |      },
+       |      {
+       |        "code" : "INVALID_REGIME",
+       |        "reason" : "Request has not passed validation. Invalid Regime."
+       |      }
+       |    ]
+       |}""".stripMargin
+
+  val singleFailureResponseAsJson: JsObject = Json.parse(singleFailureResultAsString).as[JsObject]
+  val multipleFailureResponseAsJson: JsObject = Json.parse(multipleFailureResultAsString).as[JsObject]
+
+  val registerWithMultipleIdentifiers: Action[(Option[String], Option[String])] = Action(parse.json[(Option[String], Option[String])](json => for {
+    saUtr <- (json \ "trust" \ "sautr").validateOpt[String]
+    ctUtr <- (json \ "unincorporatedAssociation" \ "ctutr").validateOpt[String]
+  } yield (saUtr, ctUtr))) {
+    implicit request =>
+
+      val (optSaUtr, optCtUtr) = request.body
+
+      (optSaUtr, optCtUtr) match {
+        case (Some(saUtr), None) => createResponse(saUtr)
+        case (None, Some(ctUtr)) => createResponse(ctUtr)
+        case _ => throw new InternalServerException(s"Unexpected input to registration stub: SA Utr - $optSaUtr CT Utr - $optCtUtr")
+      }
+  }
+
+  private def createResponse(identifier: String): Result = {
+
+    identifier match {
+      case "0000000001" => BadRequest(singleFailureResponseAsJson)
+      case "0000000002" => BadRequest(multipleFailureResponseAsJson)
+      case _ => Ok(successfulResponseAsJson)
+    }
+
+  }
+
 }

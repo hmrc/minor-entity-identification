@@ -20,7 +20,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.minorentityidentification.assets.TestConstants._
-import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersSuccess
+import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
 import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
 import uk.gov.hmrc.minorentityidentification.stubs.RegisterWithMultipleIdentifiersStub
 import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
@@ -62,11 +62,58 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         }
       }
 
-      "throw an Internal Server Exception" when {
+      "return a registration failed result with a single failure" when {
         "the call returns 500" in {
           disable(DesStub)
 
-          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR)
+          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR, registrationInternalServerErrorAsJson)
+
+          await(connector.register(jsonBodyTrust, testRegime)) match {
+            case RegisterWithMultipleIdentifiersFailure(status, body) =>
+              status mustBe INTERNAL_SERVER_ERROR
+              body.length mustBe 1
+              body.head mustBe internalServerErrorFailure
+            case _ => fail("Registration failure result expected")
+          }
+
+        }
+      }
+      "return a registration failed result with multiple failures" when {
+        "the call returns 400 with multiple errors" in {
+          disable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(BAD_REQUEST, registrationMultipleFailureResultAsJson)
+
+          await(connector.register(jsonBodyTrust, testRegime)) match {
+            case RegisterWithMultipleIdentifiersFailure(status, body) =>
+              status mustBe BAD_REQUEST
+              body.length mustBe 2
+              body.head mustBe invalidRegimeFailure
+              body.last mustBe invalidPayloadFailure
+            case _ => fail("Registration failure result with multiple failures expected")
+          }
+        }
+      }
+      "raise an internal server exception" when {
+        "the call returns status Ok, but the Json payload is invalid" in {
+          disable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(OK, invalidSuccessResponseAsJson)
+
+          intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
+        }
+        "the call returns invalid Json for a single failure" in {
+          disable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR, invalidSingleErrorAsJson)
+
+          intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
+        }
+        "the call returns invalid json for multiple failures" in {
+          disable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR, invalidMultipleErrorsAsJson)
+
           intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
         }
       }
@@ -89,11 +136,57 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         }
       }
 
-      "throw an Internal Server Exception" when {
+      "return a registration failed result with a single failure" when {
         "the call returns 500" in {
           enable(DesStub)
 
-          stubRegisterTrustSuccess(testSautr, testRegime)(INTERNAL_SERVER_ERROR, testSafeId)
+          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR, registrationInternalServerErrorAsJson)
+
+          await(connector.register(jsonBodyTrust, testRegime)) match {
+            case RegisterWithMultipleIdentifiersFailure(status, body) =>
+              status mustBe INTERNAL_SERVER_ERROR
+              body.length mustBe 1
+              body.head mustBe internalServerErrorFailure
+            case _ => fail("Registration failure result expected")
+          }
+        }
+      }
+      "return a registration failed result with multiple failures" when {
+        "the call returns 400 with multiple errors" in {
+          enable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(BAD_REQUEST, registrationMultipleFailureResultAsJson)
+
+          await(connector.register(jsonBodyTrust, testRegime)) match {
+            case RegisterWithMultipleIdentifiersFailure(status, body) =>
+              status mustBe BAD_REQUEST
+              body.length mustBe 2
+              body.head mustBe invalidRegimeFailure
+              body.last mustBe invalidPayloadFailure
+            case _ => fail("Registration failure result with multiple failures expected")
+          }
+        }
+      }
+      "raise an internal server exception" when {
+        "the call returns status Ok, but the Json payload is invalid" in {
+          enable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(OK, invalidSuccessResponseAsJson)
+
+          intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
+        }
+        "the call returns invalid Json for a single failure" in {
+          enable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR, invalidSingleErrorAsJson)
+
+          intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
+        }
+        "the call returns invalid json for multiple failures" in {
+          enable(DesStub)
+
+          stubRegisterTrustFailure(testSautr, testRegime)(INTERNAL_SERVER_ERROR, invalidMultipleErrorsAsJson)
+
           intercept[InternalServerException](await(connector.register(jsonBodyTrust, testRegime)))
         }
       }

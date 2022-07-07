@@ -41,9 +41,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val desEnvironmentHeader: String =
     servicesConfig.getString("microservice.services.des.environment")
 
-  def getRegisterWithMultipleIdentifiersUrl(regime: String): String = {
-    val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
-    s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"
+  def getRegisterWithMultipleIdentifiersUrl(regime: String, journeyId: String): String = {
+    if (isEnabled(DesStub)) desStubBaseUrl + s"/cross-regime/register/$journeyId/GRS?grsRegime=$regime"
+    else desBaseUrl + "/cross-regime/register/GRS?grsRegime=$regime"
   }
 
   def getCtReferenceUrl(ctutr: String): String = {

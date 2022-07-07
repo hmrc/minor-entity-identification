@@ -27,21 +27,21 @@ import scala.concurrent.Future
 @Singleton
 class RegisterWithMultipleIdentifiersService @Inject()(registerWithMultipleIdentifiersConnector: RegisterWithMultipleIdentifiersConnector) {
 
-  def registerTrust(sautr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+  def registerTrust(sautr: String, regime: String, journeyId: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
     val jsonBody: JsObject = Json.obj(
       "trust" -> Json.obj(
         "sautr" -> sautr
       )
     )
-    registerWithMultipleIdentifiersConnector.register(jsonBody, regime)
+    registerWithMultipleIdentifiersConnector.register(jsonBody, regime, journeyId)
   }
 
-  def registerUA(ctutr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+  def registerUA(ctutr: String, regime: String, journeyId: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
     val jsonBody: JsObject = Json.obj(
       "unincorporatedAssociation" -> Json.obj(
         "ctutr" -> ctutr
       )
     )
-    registerWithMultipleIdentifiersConnector.register(jsonBody, regime)
+    registerWithMultipleIdentifiersConnector.register(jsonBody, regime, journeyId)
   }
 }

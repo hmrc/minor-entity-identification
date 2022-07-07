@@ -32,14 +32,14 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
                                                  val authConnector: AuthConnector
                                                 )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def registerTrust(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
+  def registerTrust(journeyId: String): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
     sautr <- (json \ "sautr").validate[String]
     regime <- (json \ "regime").validate[String]
   } yield (sautr, regime))) {
     implicit request =>
       authorised() {
         val (sautr, regime) = request.body
-        registerWithMultipleIdentifiersService.registerTrust(sautr, regime).map(handleRegisterResponse)
+        registerWithMultipleIdentifiersService.registerTrust(sautr, regime, journeyId).map(handleRegisterResponse)
       }
   }
 
@@ -50,7 +50,7 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
     implicit request =>
       authorised() {
         val (ctutr, regime) = request.body
-        registerWithMultipleIdentifiersService.registerUA(ctutr, regime).map(handleRegisterResponse)
+        registerWithMultipleIdentifiersService.registerUA(ctutr, regime, "test").map(handleRegisterResponse)
       }
   }
 

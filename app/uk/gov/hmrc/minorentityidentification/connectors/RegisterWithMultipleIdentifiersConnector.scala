@@ -36,9 +36,9 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
 
   implicit val httpReads: HttpReads[RegisterWithMultipleIdentifiersResult] = RegisterWithMultipleIdentifiersHttpReads
 
-  def register(jsonBody: JsObject, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+  def register(jsonBody: JsObject, regime: String, journeyId: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
     http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
-      url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime),
+      url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime, journeyId),
       headers = extraHeaders,
       body = jsonBody
     )

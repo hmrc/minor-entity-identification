@@ -19,15 +19,15 @@ import sbt._
 object AppDependencies {
 
   val compile = Seq(
-    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "5.16.0",
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28" % "0.68.0"
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "7.1.0",
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28" % "0.71.0"
   )
 
   val test = Seq(
-    "uk.gov.hmrc" %% "bootstrap-test-play-28" % "5.16.0" % "test, it",
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-28" % "0.68.0" % "test, it",
-    "org.mockito" %% "mockito-scala" % "1.16.42" % Test,
-    "org.mockito" %% "mockito-scala-scalatest" % "1.16.42" % Test,
+    "uk.gov.hmrc" %% "bootstrap-test-play-28" % "7.1.0" % "test, it",
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-28" % "0.71.0" % "test, it",
+    "org.mockito" %% "mockito-scala" % "1.16.55" % Test,
+    "org.mockito" %% "mockito-scala-scalatest" % "1.16.55" % Test,
     "com.github.tomakehurst" % "wiremock-jre8-standalone" % "2.28.0" % "it"
   )
 }

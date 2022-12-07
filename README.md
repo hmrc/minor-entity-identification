@@ -11,6 +11,11 @@ their information to HMRC.
 3. Run the back locally using
    `sbt 'run 9726 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 
+## Testing
+
+---
+See [TestREADME](TestREADME.md) for more information about test data and endpoints
+
 ### End-Points
 
 #### POST /journey
@@ -224,75 +229,6 @@ or
 ```
 
 The array "failures" may contain one, or more, error definitions.
-
-#### POST /test-only/cross-regime/register/GRS
-
----
-Stub for downstream Register API
-
-##### Request:
-
-Body:
-
-Trust:
-
-```
-{
-  "trust": { "sautr":"1234567890"}
-}
-```
-
-Unincorporated Association:
-
-```
-{
-  "unincorporatedAssociation": { "ctutr":"1234567890"}
-}
-```
-
-
-##### Response:
-
-Status: **OK(200)**
-
-Example Response body:
-
-```
-{
-"identification":{
-                  "idType":"SAFEID",
-                  "idValue":"X00000123456789"
-                 }
-}
-```
-
-or if the identifier is "0000000001" a single
-failure response is returned
-
-```
-{
-  "code"   : "INVALID_PAYLOAD",
-  "reason" : "Request has not passed validation. Invalid Payload."
-}
-```
-
-or if the identifier is "0000000002" a multiple
-failure response is returned
-
-```
-{
-    "failures" : [
-      {
-        "code" : "INVALID_PAYLOAD",
-        "reason" : "Request has not passed validation. Invalid Payload."
-      },
-      {
-        "code" : "INVALID_REGIME",
-        "reason" : "Request has not passed validation. Invalid Regime."
-      }
-    ]
-}
-```
 
 ### License
 

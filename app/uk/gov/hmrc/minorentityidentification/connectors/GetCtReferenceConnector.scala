@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ object GetCtReferenceHttpParser {
           (response.json \ postcodeKey).validate[String] match {
             case JsSuccess(postcode, _) =>
               Some(postcode)
-            case JsError(errors) =>
-              throw new InternalServerException(s"Get CT Reference returned malformed JSON with the following errors: $errors")
+            case JsError(_) =>
+              throw new InternalServerException(s"Get CT Reference returned malformed JSON")
           }
         case NOT_FOUND =>
           None

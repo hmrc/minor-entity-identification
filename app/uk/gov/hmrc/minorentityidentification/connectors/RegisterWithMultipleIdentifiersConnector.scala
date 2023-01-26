@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ object RegisterWithMultipleIdentifiersHttpParser {
             safeId <- (response.json \ IdentificationKey \ 0 \ IdentificationValueKey).validate[String]
           } yield safeId) match {
             case JsSuccess(safeId, _) => RegisterWithMultipleIdentifiersSuccess(safeId)
-            case _: JsError => throw new InternalServerException(s"Invalid JSON returned on Register API: ${response.body}")
+            case _: JsError => throw new InternalServerException(s"Invalid JSON returned on Register API")
           }
         case _ => handleFailureResponse(response)
       }

@@ -47,14 +47,14 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
         AuthInternalIdKey -> authInternalId,
         CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
       )
-    ).toFuture.map(_ => journeyId)
+    ).toFuture().map(_ => journeyId)
 
   def getJourneyData(journeyId: String, authInternalId: String): Future[Option[JsObject]] =
     collection.find(
       Filters.and(
         Filters.equal(JourneyIdKey, journeyId),
         Filters.equal(AuthInternalIdKey, authInternalId))
-    ).headOption
+    ).headOption()
 
   def updateJourneyData(journeyId: String, authInternalId: String, dataKey: String, data: JsValue): Future[Boolean] =
     collection.updateOne(
@@ -64,7 +64,7 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
       ),
       Updates.set(dataKey, Codecs.toBson(data)),
       UpdateOptions().upsert(false)
-    ).toFuture.map {
+    ).toFuture().map {
       _.getMatchedCount == 1
     }
 
@@ -75,7 +75,7 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
         Filters.equal(AuthInternalIdKey, authInternalId)
       ),
       Updates.unset(dataKey)
-    ).toFuture.map {
+    ).toFuture().map {
       _.getMatchedCount == 1
     }
 
@@ -90,11 +90,11 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
         AuthInternalIdKey -> authInternalId,
         CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
       )
-    ).toFuture.map {
+    ).toFuture().map {
       _ != null
     }
 
-  def drop: Future[Unit] = collection.drop().toFuture.map(_ => Unit)
+  def drop: Future[Unit] = collection.drop().toFuture().map(_ => ())
 
 }
 

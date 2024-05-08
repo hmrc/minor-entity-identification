@@ -6,8 +6,8 @@ their information to HMRC.
 ### How to run the service
 
 1. Make sure any dependent services are running using the following service-manager
-   command `sm --start MINOR_ENTITY_IDENTIFICATION_ALL -r`
-2. Stop the backend in service manager using `sm --stop MINOR_ENTITY_IDENTIFICATION`
+   command `sm2 --start MINOR_ENTITY_IDENTIFICATION_ALL`
+2. Stop the backend in service manager using `sm2 --stop MINOR_ENTITY_IDENTIFICATION`
 3. Run the back locally using
    `sbt 'run 9726 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 

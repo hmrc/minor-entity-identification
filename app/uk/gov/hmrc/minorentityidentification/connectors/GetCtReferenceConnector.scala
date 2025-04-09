@@ -18,7 +18,8 @@ package uk.gov.hmrc.minorentityidentification.connectors
 
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.{JsError, JsSuccess}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
 import uk.gov.hmrc.minorentityidentification.config.AppConfig
 import uk.gov.hmrc.minorentityidentification.connectors.GetCtReferenceHttpParser.GetCtReferenceHttpReads
 
@@ -26,7 +27,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GetCtReferenceConnector @Inject()(http: HttpClient,
+class GetCtReferenceConnector @Inject()(http: HttpClientV2,
                                         appConfig: AppConfig
                                        )(implicit ec: ExecutionContext) {
 
@@ -36,7 +37,9 @@ class GetCtReferenceConnector @Inject()(http: HttpClient,
       "Environment" -> appConfig.desEnvironmentHeader
     )
 
-    http.GET[Option[String]](appConfig.getCtReferenceUrl(ctutr), headers = extraHeaders)(GetCtReferenceHttpReads, hc, ec)
+    http.get(url"${appConfig.getCtReferenceUrl(ctutr)}")
+      .setHeader(extraHeaders: _*)
+      .execute[Option[String]](GetCtReferenceHttpReads, ec)
   }
 
 }

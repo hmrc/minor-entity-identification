@@ -19,9 +19,10 @@ package uk.gov.hmrc.minorentityidentification.stubs
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json, Writes}
 import play.api.test.Helpers.UNAUTHORIZED
+import uk.gov.hmrc.http.test.HttpClientV2Support
 import uk.gov.hmrc.minorentityidentification.utils.WiremockMethods
 
-trait AuthStub extends WiremockMethods {
+trait AuthStub extends WiremockMethods with HttpClientV2Support {
 
   val authUrl = "/auth/authorise"
 

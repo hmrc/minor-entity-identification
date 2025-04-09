@@ -18,15 +18,18 @@ import sbt.*
 
 object AppDependencies {
 
-  val compile = Seq(
-    "uk.gov.hmrc" %% "bootstrap-backend-play-30" % "8.5.0",
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30" % "1.8.0"
+  private val bootstrapPlayVersion = "9.11.0"
+  private val hmrcMongoPlayVersion = "2.6.0"
+
+  val compile: Seq[ModuleID] = Seq(
+    "uk.gov.hmrc" %% "bootstrap-backend-play-30" % bootstrapPlayVersion,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30" % hmrcMongoPlayVersion
   )
 
-  val test = Seq(
-    "uk.gov.hmrc" %% "bootstrap-test-play-30" % "8.5.0" % Test,
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % "1.8.0" % Test,
-    "org.mockito" %% "mockito-scala" % "1.17.31" % Test,
-    "org.mockito" %% "mockito-scala-scalatest" % "1.17.31" % Test,
+  val test: Seq[ModuleID] = Seq(
+    "uk.gov.hmrc" %% "bootstrap-test-play-30" % bootstrapPlayVersion % Test,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % hmrcMongoPlayVersion % Test,
+    "org.mockito" %% "mockito-scala" % "1.17.37" % Test,
+    "org.mockito" %% "mockito-scala-scalatest" % "1.17.37" % Test,
   )
 }

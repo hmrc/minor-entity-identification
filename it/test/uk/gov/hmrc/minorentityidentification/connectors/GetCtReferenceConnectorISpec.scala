@@ -19,15 +19,20 @@ package uk.gov.hmrc.minorentityidentification.connectors
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import uk.gov.hmrc.http.test.HttpClientV2Support
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testCompanyDetailsJson, testCtutr, testPostcode}
 import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
 import uk.gov.hmrc.minorentityidentification.stubs.GetCtReferenceStub
 import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
 
-class GetCtReferenceConnectorISpec extends ComponentSpecHelper with FeatureSwitching with GetCtReferenceStub {
+import scala.concurrent.ExecutionContext
 
-  lazy val connector: GetCtReferenceConnector = app.injector.instanceOf[GetCtReferenceConnector]
+class GetCtReferenceConnectorISpec extends ComponentSpecHelper with FeatureSwitching with HttpClientV2Support with GetCtReferenceStub {
+  private implicit val ec: ExecutionContext = ExecutionContext.global
+  lazy val connector: GetCtReferenceConnector = new GetCtReferenceConnector(httpClientV2, appConfig) {
+
+  }
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

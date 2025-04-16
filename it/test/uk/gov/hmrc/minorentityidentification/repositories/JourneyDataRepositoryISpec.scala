@@ -22,7 +22,6 @@ import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testInternalI
 import uk.gov.hmrc.minorentityidentification.utils.{ComponentSpecHelper, JourneyDataMongoHelper}
 
 import java.util.concurrent.TimeUnit
-
 class JourneyDataRepositoryISpec extends ComponentSpecHelper with JourneyDataMongoHelper {
 
   override def beforeEach(): Unit = {

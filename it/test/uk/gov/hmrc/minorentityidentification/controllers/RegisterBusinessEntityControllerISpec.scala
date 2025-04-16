@@ -18,6 +18,7 @@ package uk.gov.hmrc.minorentityidentification.controllers
 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.test.HttpClientV2Support
 import uk.gov.hmrc.minorentityidentification.assets.TestConstants._
 import uk.gov.hmrc.minorentityidentification.stubs.{AuthStub, RegisterWithMultipleIdentifiersStub}
 import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
@@ -25,7 +26,7 @@ import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
 import javax.inject.Singleton
 
 @Singleton
-class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with AuthStub with RegisterWithMultipleIdentifiersStub {
+class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with AuthStub with HttpClientV2Support with RegisterWithMultipleIdentifiersStub {
 
   "POST /register-trust" should {
     "return OK with status Registered and the SafeId" when {

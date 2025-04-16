@@ -22,8 +22,9 @@ import play.api.test.Helpers.{NOT_FOUND, OK}
 import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testCompanyDetailsJson, testCtutr, testInternalId, testPostcode}
 import uk.gov.hmrc.minorentityidentification.stubs.{AuthStub, GetCtReferenceStub}
 import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
+import uk.gov.hmrc.http.test.HttpClientV2Support
 
-class ValidateCtDetailsControllerISpec extends ComponentSpecHelper with AuthStub with GetCtReferenceStub {
+class ValidateCtDetailsControllerISpec extends ComponentSpecHelper with AuthStub with HttpClientV2Support with GetCtReferenceStub {
 
   "validateDetails" should {
     "return details match" when {

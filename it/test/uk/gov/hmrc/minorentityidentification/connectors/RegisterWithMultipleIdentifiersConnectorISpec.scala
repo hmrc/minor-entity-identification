@@ -18,6 +18,7 @@ package uk.gov.hmrc.minorentityidentification.connectors
 
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.test.HttpClientV2Support
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.minorentityidentification.assets.TestConstants._
 import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
@@ -25,9 +26,13 @@ import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.{DesStub,
 import uk.gov.hmrc.minorentityidentification.stubs.RegisterWithMultipleIdentifiersStub
 import uk.gov.hmrc.minorentityidentification.utils.ComponentSpecHelper
 
-class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper with RegisterWithMultipleIdentifiersStub with FeatureSwitching {
+import scala.concurrent.ExecutionContext
 
-  lazy val connector: RegisterWithMultipleIdentifiersConnector = app.injector.instanceOf[RegisterWithMultipleIdentifiersConnector]
+class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper with RegisterWithMultipleIdentifiersStub with FeatureSwitching
+  with HttpClientV2Support {
+
+  private implicit val ec: ExecutionContext = ExecutionContext.global
+  lazy val connector: RegisterWithMultipleIdentifiersConnector = new RegisterWithMultipleIdentifiersConnector(httpClientV2, appConfig)
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

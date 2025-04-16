@@ -19,16 +19,17 @@ package uk.gov.hmrc.minorentityidentification.connectors
 import play.api.http.Status.OK
 import play.api.libs.json._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.minorentityidentification.config.AppConfig
-import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.{RegisterWithMultipleIdentifiersHttpReads, RegisterWithMultipleIdentifiersResult}
+import uk.gov.hmrc.minorentityidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
+class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClientV2,
                                                          appConfig: AppConfig
                                                         )(implicit ec: ExecutionContext) {
-  lazy val extraHeaders = Seq(
+  lazy val extraHeaders: Seq[(String, String)] = Seq(
     "Authorization" -> appConfig.desAuthorisationToken,
     "Environment" -> appConfig.desEnvironmentHeader,
     "Content-Type" -> "application/json"
@@ -37,20 +38,19 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
   implicit val httpReads: HttpReads[RegisterWithMultipleIdentifiersResult] = RegisterWithMultipleIdentifiersHttpReads
 
   def register(jsonBody: JsObject, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
-    http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
-      url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime),
-      headers = extraHeaders,
-      body = jsonBody
-    )
+    http.post(url"${appConfig.getRegisterWithMultipleIdentifiersUrl(regime)}")
+      .setHeader(extraHeaders: _*)
+      .withBody(jsonBody)
+      .execute[RegisterWithMultipleIdentifiersResult]
   }
 }
 
 object RegisterWithMultipleIdentifiersHttpParser {
 
-  val IdentificationKey = "identification"
-  val IdentificationTypeKey = "idType"
-  val IdentificationValueKey = "idValue"
-  val SafeIdKey = "SAFEID"
+  private val IdentificationKey = "identification"
+  private val IdentificationTypeKey = "idType"
+  private val IdentificationValueKey = "idValue"
+  private val SafeIdKey = "SAFEID"
 
   object RegisterWithMultipleIdentifiersHttpReads extends HttpReads[RegisterWithMultipleIdentifiersResult] {
 

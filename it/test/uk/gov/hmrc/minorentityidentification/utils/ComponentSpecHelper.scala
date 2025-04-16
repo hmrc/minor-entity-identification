@@ -25,6 +25,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
+import uk.gov.hmrc.minorentityidentification.config.AppConfig
 
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
@@ -53,6 +54,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.des.stub-url" -> mockUrl
   )
 
+  protected implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 
   override def beforeAll(): Unit = {

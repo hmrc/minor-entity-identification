@@ -18,10 +18,9 @@ package uk.gov.hmrc.minorentityidentification.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.test.HttpClientV2Support
 import uk.gov.hmrc.minorentityidentification.utils.WiremockMethods
 
-trait GetCtReferenceStub extends WiremockMethods with HttpClientV2Support {
+trait GetCtReferenceStub extends WiremockMethods {
 
   private val desHeaders = Map(
     "Authorization" -> "Bearer dev",

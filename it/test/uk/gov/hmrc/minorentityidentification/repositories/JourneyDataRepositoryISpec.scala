@@ -18,13 +18,11 @@ package uk.gov.hmrc.minorentityidentification.repositories
 
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import uk.gov.hmrc.http.test.HttpClientV2Support
 import uk.gov.hmrc.minorentityidentification.assets.TestConstants.{testInternalId, testJourneyId}
 import uk.gov.hmrc.minorentityidentification.utils.{ComponentSpecHelper, JourneyDataMongoHelper}
 
 import java.util.concurrent.TimeUnit
-
-class JourneyDataRepositoryISpec extends ComponentSpecHelper with JourneyDataMongoHelper with HttpClientV2Support {
+class JourneyDataRepositoryISpec extends ComponentSpecHelper with JourneyDataMongoHelper {
 
   override def beforeEach(): Unit = {
     super.beforeEach()

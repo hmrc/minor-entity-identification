@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,17 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapPlayVersion = "9.11.0"
-  private val hmrcMongoPlayVersion = "2.6.0"
+  private val bootstrapPlayVersion = "9.19.0"
+  private val hmrcMongoPlayVersion = "2.7.0"
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "bootstrap-backend-play-30" % bootstrapPlayVersion,
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30" % hmrcMongoPlayVersion
+    "uk.gov.hmrc"       %% "bootstrap-backend-play-30" % bootstrapPlayVersion,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30"        % hmrcMongoPlayVersion
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "bootstrap-test-play-30" % bootstrapPlayVersion % Test,
+    "uk.gov.hmrc"       %% "bootstrap-test-play-30"  % bootstrapPlayVersion % Test,
     "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % hmrcMongoPlayVersion % Test,
-    "org.mockito" %% "mockito-scala" % "1.17.37" % Test,
-    "org.mockito" %% "mockito-scala-scalatest" % "1.17.37" % Test,
+    "org.mockito"       %% "mockito-scala-scalatest" % "2.0.0" % Test,
   )
 }

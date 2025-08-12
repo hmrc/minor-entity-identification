@@ -28,7 +28,6 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s",
   )
   .settings(CodeCoverageSettings.settings *)
-  .settings(resolvers += Resolver.jcenterRepo)
 
 lazy val it = project
   .enablePlugins(PlayScala)

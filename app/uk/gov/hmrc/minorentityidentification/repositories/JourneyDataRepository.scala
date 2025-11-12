@@ -20,7 +20,7 @@ import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model._
 import play.api.libs.json._
 import uk.gov.hmrc.minorentityidentification.config.AppConfig
-import uk.gov.hmrc.minorentityidentification.repositories.JourneyDataRepository._
+import uk.gov.hmrc.minorentityidentification.repositories.JourneyDataRepository.timeToLiveIndex
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 
@@ -43,65 +43,58 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
   def createJourney(journeyId: String, authInternalId: String): Future[String] =
     collection.insertOne(
       Json.obj(
-        JourneyIdKey -> journeyId,
-        AuthInternalIdKey -> authInternalId,
-        CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
+        JourneyDataRepository.JourneyIdKey -> journeyId,
+        JourneyDataRepository.AuthInternalIdKey -> authInternalId,
+        JourneyDataRepository.CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
       )
     ).toFuture().map(_ => journeyId)
 
   def getJourneyData(journeyId: String, authInternalId: String): Future[Option[JsObject]] =
     collection.find(
       Filters.and(
-        Filters.equal(JourneyIdKey, journeyId),
-        Filters.equal(AuthInternalIdKey, authInternalId))
+        Filters.equal(JourneyDataRepository.JourneyIdKey, journeyId),
+        Filters.equal(JourneyDataRepository.AuthInternalIdKey, authInternalId))
     ).headOption()
 
   def updateJourneyData(journeyId: String, authInternalId: String, dataKey: String, data: JsValue): Future[Boolean] =
     collection.updateOne(
       Filters.and(
-        Filters.equal(JourneyIdKey, journeyId),
-        Filters.equal(AuthInternalIdKey, authInternalId)
+        Filters.equal(JourneyDataRepository.JourneyIdKey, journeyId),
+        Filters.equal(JourneyDataRepository.AuthInternalIdKey, authInternalId)
       ),
       Updates.set(dataKey, Codecs.toBson(data)),
       UpdateOptions().upsert(false)
-    ).toFuture().map {
-      _.getMatchedCount == 1
-    }
+    ).toFuture().map(_.getMatchedCount == 1)
 
   def removeJourneyDataField(journeyId: String, authInternalId: String, dataKey: String): Future[Boolean] =
     collection.updateOne(
       Filters.and(
-        Filters.equal(JourneyIdKey, journeyId),
-        Filters.equal(AuthInternalIdKey, authInternalId)
+        Filters.equal(JourneyDataRepository.JourneyIdKey, journeyId),
+        Filters.equal(JourneyDataRepository.AuthInternalIdKey, authInternalId)
       ),
       Updates.unset(dataKey)
-    ).toFuture().map {
-      _.getMatchedCount == 1
-    }
+    ).toFuture().map(_.getMatchedCount == 1)
 
   def removeJourneyData(journeyId: String, authInternalId: String): Future[Boolean] =
     collection.findOneAndReplace(
       Filters.and(
-        Filters.equal(JourneyIdKey, journeyId),
-        Filters.equal(AuthInternalIdKey, authInternalId)
+        Filters.equal(JourneyDataRepository.JourneyIdKey, journeyId),
+        Filters.equal(JourneyDataRepository.AuthInternalIdKey, authInternalId)
       ),
       Json.obj(
-        JourneyIdKey -> journeyId,
-        AuthInternalIdKey -> authInternalId,
-        CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
+        JourneyDataRepository.JourneyIdKey -> journeyId,
+        JourneyDataRepository.AuthInternalIdKey -> authInternalId,
+        JourneyDataRepository.CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
       )
-    ).toFuture().map {
-      _ != null
-    }
+    ).toFuture().map(_ != null)
 
   def drop: Future[Unit] = collection.drop().toFuture().map(_ => ())
-
 }
 
 object JourneyDataRepository {
-  val JourneyIdKey: String = "_id"
-  val AuthInternalIdKey: String = "authInternalId"
-  val CreationTimestampKey: String = "creationTimestamp"
+  private val JourneyIdKey: String         = "_id"
+  private val AuthInternalIdKey: String    = "authInternalId"
+  private val CreationTimestampKey: String = "creationTimestamp"
 
   def timeToLiveIndex(timeToLiveDuration: Long): IndexModel = IndexModel(
     keys = ascending(CreationTimestampKey),

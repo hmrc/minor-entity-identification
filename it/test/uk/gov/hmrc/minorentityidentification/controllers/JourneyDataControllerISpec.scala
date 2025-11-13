@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import java.util.UUID
 class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers with JourneyDataMongoHelper with AuthStub {
 
   lazy val testIncorrectAuthInternalId: String = UUID.randomUUID().toString
+  val testDataKey: String   = "testDataKey"
+  val testDataValue: String = "testDataValue"
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .overrides(bind[JourneyIdGenerationService].toInstance(new FakeJourneyIdGenerationService(testJourneyId)))
@@ -55,6 +57,16 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
         res.status mustBe UNAUTHORIZED
       }
     }
+    "internalId is missing from Auth" should {
+      "return message indicating the internal ID could not be retrieved" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        val res = post("/journey")(Json.obj())
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+        res.body.contains("Internal ID could not be retrieved from Auth") mustBe true
+      }
+    }
   }
 
   "GET /journey/:journeyId" when {
@@ -76,6 +88,18 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
 
         res.status mustBe OK
         res.json mustBe expectedData
+      }
+    }
+
+    "internalId is missing from Auth" should {
+      "return message indicating the internal ID could not be retrieved" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        val res = get(s"/journey/$testJourneyId")
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+        res.body.contains("Internal ID could not be retrieved from Auth") mustBe true
+
       }
     }
 
@@ -122,8 +146,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     "there is data stored against the journey ID containing the value in dataKey" should {
       "return all the data stored against the journeyId and dataKey" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
-        val testDataValue = "testDataValue"
 
         val testData = Json.obj(
           testDataKey -> testDataValue
@@ -137,10 +159,20 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
       }
     }
 
+    "internalId is missing from Auth" should {
+      "return message indicating the internal ID could not be retrieved" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        val res = get(s"/journey/$testJourneyId/$testDataKey")
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+        res.body.contains("Internal ID could not be retrieved from Auth") mustBe true
+      }
+    }
+    
     "there is data stored against the journey ID but no data for the dataKey" should {
       "return NOT FOUND with a code indicating there is no data" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
 
         insertById(testJourneyId, testInternalId)
 
@@ -157,7 +189,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     "there is no data stored against the journey ID" should {
       "return all the data stored against the journeyId and dataKey" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
 
         insertById(testJourneyId, testInternalId)
 
@@ -175,8 +206,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
       "return Unauthorised" in {
         stubAuthFailure()
 
-        val testDataKey = "testDataKey"
-
         val res = get(s"/journey/$testJourneyId/$testDataKey")
 
         res.status mustBe UNAUTHORIZED
@@ -186,7 +215,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     "the provided internal ID does not match the ID on the record" should {
       "return Not Found" in {
         stubAuth(OK, successfulAuthResponse(Some(testIncorrectAuthInternalId)))
-        val testDataKey = "testDataKey"
 
         val res = get(s"/journey/$testJourneyId/$testDataKey")
 
@@ -200,8 +228,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     "there is a journey for the provided journey ID" should {
       "update the data with the provided data" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
-        val testDataValue = "testDataValue"
 
         insertById(testJourneyId, testInternalId)
 
@@ -219,11 +245,20 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
       }
     }
 
+    "internalId is missing from Auth" should {
+      "return message indicating the internal ID could not be retrieved" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        val res = put(s"/journey/$testJourneyId/$testDataKey")(testDataValue)
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+        res.body.contains("Internal ID could not be retrieved from Auth") mustBe true
+      }
+    }
+
     "there is no journey for the provided journey ID" should {
       "return Internal Server Error" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
-        val testDataValue = "testDataValue"
 
         val res = put(s"/journey/$testJourneyId/$testDataKey")(testDataValue)
 
@@ -237,9 +272,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
       "return Unauthorised" in {
         stubAuthFailure()
 
-        val testDataKey = "testDataKey"
-        val testDataValue = "testDataValue"
-
         val res = put(s"/journey/$testJourneyId/$testDataKey")(testDataValue)
 
         res.status mustBe UNAUTHORIZED
@@ -249,8 +281,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     "the provided internal ID does not match the ID on the record" should {
       "return Internal Server Error" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
-        val testDataValue = "testDataValue"
 
         insertById(testJourneyId, testIncorrectAuthInternalId)
 
@@ -265,8 +295,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     "there is a journey for the provided journey ID" should {
       "remove the data with the provided data key" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
-        val testDataValue = "testDataValue"
 
         insertById(testJourneyId, testInternalId, Json.obj(testDataKey -> testDataValue))
 
@@ -283,10 +311,20 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
       }
     }
 
+    "internalId is missing from Auth" should {
+      "return message indicating the internal ID could not be retrieved" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        val res = delete(s"/journey/$testJourneyId/$testDataKey")
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+        res.body.contains("Internal ID could not be retrieved from Auth") mustBe true
+      }
+    }
+
     "there is no journey for the provided journey ID" should {
       "not perform the operation and return No Content" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        val testDataKey = "testDataKey"
 
         val res = delete(s"/journey/$testJourneyId/$testDataKey")
 
@@ -302,8 +340,6 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
       "return Unauthorised" in {
         stubAuthFailure()
 
-        val testDataKey = "testDataKey"
-
         val res = delete(s"/journey/$testJourneyId/$testDataKey")
 
         res.status mustBe UNAUTHORIZED
@@ -311,28 +347,41 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
     }
   }
 
-  "DELETE /journey/:journeyId" should {
-    "remove all journey data except JourneyId, AuthInternalId and CreationTimestamp" in {
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      val testDataKey = "testDataKey"
-      val testDataValue = "testDataValue"
-      val secondTestDataKey = "secondDataKey"
-      val secondTestDataValue = "secondDataValue"
-      val creationTimestampKey: String = "creationTimestamp"
+  "DELETE /journey/:journeyId" when {
+    "there is a journey for the provided journey ID" should {
+      "remove all journey data except JourneyId, AuthInternalId and CreationTimestamp" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
-      insertById(testJourneyId, testInternalId, Json.obj(testDataKey -> testDataValue, secondTestDataKey -> secondTestDataValue))
+        val testDataValue = "testDataValue"
+        val secondTestDataKey = "secondDataKey"
+        val secondTestDataValue = "secondDataValue"
+        val creationTimestampKey: String = "creationTimestamp"
 
-      val res = delete(s"/journey/$testJourneyId")
+        insertById(testJourneyId, testInternalId, Json.obj(testDataKey -> testDataValue, secondTestDataKey -> secondTestDataValue))
 
-      res.status mustBe NO_CONTENT
+        val res = delete(s"/journey/$testJourneyId")
 
-      findById(testJourneyId).map(_.-(creationTimestampKey)) mustBe Some(
-        Json.obj(
-          "_id" -> testJourneyId,
-          "authInternalId" -> testInternalId
+        res.status mustBe NO_CONTENT
+
+        findById(testJourneyId).map(_.-(creationTimestampKey)) mustBe Some(
+          Json.obj(
+            "_id" -> testJourneyId,
+            "authInternalId" -> testInternalId
+          )
         )
-      )
+      }
     }
+    "internalId is missing from Auth" should {
+      "return message indicating the internal ID could not be retrieved" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        val res = delete(s"/journey/$testJourneyId")
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+        res.body.contains("Internal ID could not be retrieved from Auth") mustBe true
+      }
+    }
+
   }
 
 }

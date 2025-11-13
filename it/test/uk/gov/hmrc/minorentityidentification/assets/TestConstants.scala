@@ -24,18 +24,19 @@ import java.util.UUID
 
 object TestConstants {
 
-  lazy val testJourneyId: String = UUID.randomUUID().toString
+  lazy val testJourneyId: String  = UUID.randomUUID().toString
   lazy val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testSautr: String = "1234567890"
-  val testCtutr: String = "1234229999"
-  val testRegime: String = "VATC"
-  val testPostcode: String = "NE98 1ZZ"
+  val testSafeId: String          = UUID.randomUUID().toString
+
+  val testSautr: String           = "1234567890"
+  val testCtutr: String           = "1234229999"
+  val testRegime: String          = "VATC"
+  val testPostcode: String        = "NE98 1ZZ"
 
   val testCompanyDetailsJson: JsObject = Json.obj("companyName" -> "ACME", "companyAddress" -> "Address 1", "companyPostCode" -> "NE98 1ZZ")
 
   val testRegistrationTrustJsonBody: JsObject = Json.obj("sautr" -> testSautr, "regime" -> testRegime)
-  val testRegistrationUAJsonBody: JsObject = Json.obj("ctutr" -> testCtutr, "regime" -> testRegime)
+  val testRegistrationUAJsonBody: JsObject    = Json.obj("ctutr" -> testCtutr, "regime" -> testRegime)
 
   val registrationInternalServerErrorAsString: String =
     s"""

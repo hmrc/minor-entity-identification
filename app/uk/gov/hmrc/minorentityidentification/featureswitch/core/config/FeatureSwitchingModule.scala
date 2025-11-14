@@ -25,7 +25,8 @@ import javax.inject.Singleton
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(DesStub, StubGetCtReference)
+  val switches: Seq[FeatureSwitch] = {
+    Seq(DesStub, StubGetCtReference)}
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(

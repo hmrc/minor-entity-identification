@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.minorentityidentification.connectors
 
-import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK}
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.test.HttpClientV2Support
@@ -63,6 +63,12 @@ class GetCtReferenceConnectorISpec extends ComponentSpecHelper with FeatureSwitc
 
           intercept[InternalServerException](await(connector.getCtReference(testCtutr)))
         }
+        "a malformed json is returned" in {
+          disable(DesStub)
+          stubGetCtReference(testCtutr)(OK, body = Json.obj("companyName" -> "ACME", "companyAddress" -> "Address 1"))
+
+          intercept[InternalServerException](await(connector.getCtReference(testCtutr)))
+        }
       }
     }
     "the DES Feature switch is enabled" should {
@@ -82,14 +88,6 @@ class GetCtReferenceConnectorISpec extends ComponentSpecHelper with FeatureSwitc
           val result = await(connector.getCtReference(testCtutr))
 
           result mustBe None
-        }
-      }
-      "throw and internal server exception" when {
-        "a different status is returned" in {
-          enable(DesStub)
-          stubGetCtReference(testCtutr)(BAD_REQUEST)
-
-          intercept[InternalServerException](await(connector.getCtReference(testCtutr)))
         }
       }
     }

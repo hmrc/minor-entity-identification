@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.minorentityidentification.services
 
-import org.mockito.scalatest.{IdiomaticMockito, ResetMocksAfterEachTest}
+import org.mockito.Mockito.when
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.minorentityidentification.connectors.GetCtReferenceConnector
@@ -27,7 +28,8 @@ import uk.gov.hmrc.minorentityidentification.models.{DetailsMatched, DetailsMism
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ValidateCtDetailsServiceSpec extends AnyWordSpec with Matchers with IdiomaticMockito with ResetMocksAfterEachTest {
+class ValidateCtDetailsServiceSpec extends AnyWordSpec with Matchers {
+
   val mockGetCtReferenceConnector: GetCtReferenceConnector = mock[GetCtReferenceConnector]
 
   object TestValidateCtutrService extends ValidateCtDetailsService(mockGetCtReferenceConnector)
@@ -40,12 +42,12 @@ class ValidateCtDetailsServiceSpec extends AnyWordSpec with Matchers with Idioma
   "validateDetails" should {
     "return DetailsMatched" when {
       "the supplied postcode matches the retrieved postcode" in {
-        mockGetCtReferenceConnector.getCtReference(testCtutr) returns Future.successful(Some(testPostcode))
+        when(mockGetCtReferenceConnector.getCtReference(testCtutr)).thenReturn(Future.successful(Some(testPostcode)))
 
         await(TestValidateCtutrService.validateDetails(testCtutr, testPostcode)) mustBe DetailsMatched
       }
       "the postcodes is lower case but matches" in {
-        mockGetCtReferenceConnector.getCtReference(testCtutr) returns Future.successful(Some(testPostcode))
+        when(mockGetCtReferenceConnector.getCtReference(testCtutr)).thenReturn(Future.successful(Some(testPostcode)))
 
         await(TestValidateCtutrService.validateDetails(testCtutr, "ne981zz")) mustBe DetailsMatched
       }
@@ -53,14 +55,14 @@ class ValidateCtDetailsServiceSpec extends AnyWordSpec with Matchers with Idioma
     "return DetailsMismatched" when {
       "the supplied postcode does not match the retrieved postcode" in {
         val mismatchedPostcode = "AA1 1AA"
-        mockGetCtReferenceConnector.getCtReference(testCtutr) returns Future.successful(Some(testPostcode))
+        when(mockGetCtReferenceConnector.getCtReference(testCtutr)).thenReturn(Future.successful(Some(testPostcode)))
 
         await(TestValidateCtutrService.validateDetails(testCtutr, mismatchedPostcode)) mustBe DetailsMismatched
       }
     }
     "return DetailsNotFound" when {
       "when the call returns 404" in {
-        mockGetCtReferenceConnector.getCtReference(testCtutr) returns Future.successful(None)
+        when(mockGetCtReferenceConnector.getCtReference(testCtutr)).thenReturn(Future.successful(None))
 
         await(TestValidateCtutrService.validateDetails(testCtutr, testPostcode)) mustBe DetailsNotFound
       }

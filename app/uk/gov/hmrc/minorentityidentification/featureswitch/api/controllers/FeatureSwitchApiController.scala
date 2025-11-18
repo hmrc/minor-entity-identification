@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,18 @@
 package uk.gov.hmrc.minorentityidentification.featureswitch.api.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, InjectedController}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.minorentityidentification.featureswitch.api.services.FeatureSwitchService
 import uk.gov.hmrc.minorentityidentification.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.minorentityidentification.featureswitch.core.models.FeatureSwitchSetting
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton
-class FeatureSwitchApiController @Inject()(config: Configuration,
-                                           featureSwitchService: FeatureSwitchService
-                                          ) extends InjectedController with FeatureSwitching {
+class FeatureSwitchApiController @Inject()(featureSwitchService: FeatureSwitchService,
+                                           cc: ControllerComponents
+                                          ) extends BackendController(cc) with FeatureSwitching {
+
   def getFeatureSwitches(): Action[AnyContent] = Action {
     Ok(Json.toJson(featureSwitchService.getFeatureSwitches()))
   }

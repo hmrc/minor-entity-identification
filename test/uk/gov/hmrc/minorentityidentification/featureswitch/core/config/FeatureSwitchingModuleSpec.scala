@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package uk.gov.hmrc.minorentityidentification.featureswitch.core.config
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.Json
+import uk.gov.hmrc.minorentityidentification.featureswitch.core.models.FeatureSwitchSetting
 
 class FeatureSwitchingModuleSpec extends AnyWordSpec with Matchers {
 
@@ -52,6 +54,30 @@ class FeatureSwitchingModuleSpec extends AnyWordSpec with Matchers {
         case _: IllegalArgumentException => succeed
       }
 
+    }
+
+    "write to JSON correctly" in {
+      val setting = FeatureSwitchSetting("testConfig", "Test Feature", isEnabled = true)
+
+      val json = Json.toJson(setting)
+
+      (json \ "configName").as[String] mustBe "testConfig"
+      (json \ "displayName").as[String] mustBe "Test Feature"
+      (json \ "isEnabled").as[Boolean] mustBe true
+    }
+
+    "read from JSON correctly" in {
+      val json = Json.obj(
+        "configName"  -> "testConfig",
+        "displayName" -> "Test Feature",
+        "isEnabled"   -> false
+      )
+
+      val setting = json.as[FeatureSwitchSetting]
+
+      setting.configName mustBe "testConfig"
+      setting.displayName mustBe "Test Feature"
+      setting.isEnabled mustBe false
     }
 
   }
